@@ -93,6 +93,7 @@
             background: #3367d6;
         }
     </style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
     <div class="calculator">
@@ -118,7 +119,15 @@
                     <li>Subconscious phonetic attraction</li>
                 </ul>
             </div>
-            <button id="shareBtn">📤 Share Your Result</button>
+            <div id="shareOptions" style="display: none; margin-top: 20px; text-align: center;">
+  <p>Share your anonymous result:</p>
+  <div style="display: flex; gap: 10px; justify-content: center;">
+   <button onclick="share('whatsapp')"><i class="fab fa-whatsapp"></i> WhatsApp</button>
+<button onclick="share('instagram')"><i class="fab fa-instagram"></i> Instagram</button>
+<button onclick="share('snapchat')"><i class="fab fa-snapchat"></i> Snapchat</button>
+<button onclick="share('copy')"><i class="fas fa-link"></i> Copy Link</button>
+  </div>
+</div>
         </div>
     </div>
 
@@ -203,7 +212,7 @@
                 
                 // Show result and share button
                 document.getElementById('result').style.display = 'block';
-                document.getElementById('shareBtn').style.display = 'block';
+                document.getElementById('shareOptions').style.display = 'block';
                 document.getElementById('btnText').style.display = 'inline';
                 document.getElementById('btnLoading').style.display = 'none';
                 document.getElementById('submitBtn').disabled = false;
@@ -227,6 +236,31 @@
                 console.log("Error sharing:", err);
             }
         });
+// Share function
+function share(platform) {
+  const resultText = `${userData.percent}% Love Compatibility! ❤️`;
+  const shareUrl = window.location.href; // Gets current page URL
+
+  switch(platform) {
+    case "whatsapp":
+      window.open(`https://wa.me/?text=${encodeURIComponent(`${resultText} → ${shareUrl}`)}`);
+      break;
+    case "instagram":
+      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+        window.open(`instagram://library?AssetPath=${encodeURIComponent(shareUrl)}`);
+      } else {
+        window.open("https://www.instagram.com/");
+      }
+      break;
+    case "snapchat":
+      window.open(`https://www.snapchat.com/scan?attachmentUrl=${encodeURIComponent(shareUrl)}`);
+      break;
+    case "copy":
+      navigator.clipboard.writeText(`${resultText} → ${shareUrl}`)
+        .then(() => alert("Link copied to clipboard!"));
+      break;
+  }
+}
     </script>
 </body>
 </html>

